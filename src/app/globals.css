@@ -13,9 +13,106 @@
   --font-mono: var(--font-geist-mono);
 }
 
+.app-shell {
+  --app-background: #f1f2f4;
+  --app-foreground: #25272b;
+  --sidebar-background: #e7e8eb;
+  --surface-background: #e5e7eb;
+  --surface-border: #d2d5da;
+  --muted-foreground: #626872;
+  --accent-background: #d8dbe0;
+  --button-background: #dfe1e5;
+  --button-hover: #d4d7dc;
+  --button-active: #c9cdd3;
+  --send-background: #42464d;
+  --send-foreground: #ffffff;
+
+  background: var(--app-background);
+  color: var(--app-foreground);
+  transition: background-color 180ms ease, color 180ms ease;
+}
+
+.app-shell[data-theme="dark"] {
+  --app-background: #242528;
+  --app-foreground: #f1f1f2;
+  --sidebar-background: #2c2e32;
+  --surface-background: #33353a;
+  --surface-border: #45484e;
+  --muted-foreground: #b1b4bc;
+  --accent-background: #41444a;
+  --button-background: #393c42;
+  --button-hover: #46494f;
+  --button-active: #565a62;
+  --send-background: #e0e1e4;
+  --send-foreground: #242528;
+}
+
 body {
   margin: 0;
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+.sidebar {
+  background: var(--sidebar-background);
+  border-color: var(--surface-border);
+}
+
+.header-border {
+  border-color: var(--surface-border);
+}
+
+.surface-card {
+  background: var(--surface-background);
+  border: 1px solid var(--surface-border);
+}
+
+.text-muted {
+  color: var(--muted-foreground);
+}
+
+.bg-accent {
+  background: var(--accent-background);
+}
+
+.secondary-button,
+.theme-button {
+  background: var(--button-background);
+  border: 1px solid var(--surface-border);
+  transition: background-color 150ms ease;
+}
+
+.secondary-button:hover,
+.theme-button:hover {
+  background: var(--button-hover);
+}
+
+.theme-button-active {
+  background: var(--button-active);
+  font-weight: 600;
+}
+
+.send-button {
+  background: var(--send-background);
+  color: var(--send-foreground);
+}
+
+.send-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+button:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--muted-foreground);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell,
+  .secondary-button,
+  .theme-button {
+    transition: none;
+  }
 }
