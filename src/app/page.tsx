@@ -5,33 +5,23 @@ import { useState } from "react";
 
 import { ChatInput } from "@/components/chat/chat-input";
 import { ChatMessage } from "@/components/chat/chat-message";
-import type { ChatMessage as ChatMessageType } from "@/types/chat";
+import { useChat } from "@/hooks/use-chat";
 
 type Theme = "light" | "dark";
 
 export default function Home() {
   const [theme, setTheme] = useState<Theme>("dark");
-  const [messages, setMessages] = useState<ChatMessageType[]>([]);
+
+  const {
+    messages,
+    isLoading,
+    error,
+    sendMessage,
+    newConversation,
+  } = useChat();
 
   const isDark = theme === "dark";
   const hasMessages = messages.length > 0;
-
-  function handleSendMessage(question: string) {
-    const newMessage: ChatMessageType = {
-      id: crypto.randomUUID(),
-      role: "user",
-      content: question,
-    };
-
-    setMessages((previousMessages) => [
-      ...previousMessages,
-      newMessage,
-    ]);
-  }
-
-  function handleNewConversation() {
-    setMessages([]);
-  }
 
   return (
     <main
@@ -55,7 +45,7 @@ export default function Home() {
 
         <button
           type="button"
-          onClick={handleNewConversation}
+          onClick={newConversation}
           className="secondary-button w-full rounded-xl px-4 py-3 text-left text-sm font-medium"
         >
           + Nova conversa
@@ -155,6 +145,15 @@ export default function Home() {
                   message={message}
                 />
               ))}
+
+              {isLoading && (
+                <div
+                  role="status"
+                  className="assistant-message w-fit max-w-[85%] rounded-2xl p-4 text-sm sm:max-w-[75%]"
+                >
+                  Consultando documentos e gerando resposta...
+                </div>
+              )}
             </div>
           ) : (
             <div className="w-full max-w-2xl text-center">
@@ -186,12 +185,22 @@ export default function Home() {
 
         <footer className="px-6 pb-6 pt-3">
           <div className="mx-auto max-w-4xl">
-            <ChatInput onSubmit={handleSendMessage} />
+            {error && (
+              <div
+                role="alert"
+                className="mb-4 rounded-xl border border-red-400/40 bg-red-500/10 px-4 py-3 text-sm text-red-500"
+              >
+                {error}
+              </div>
+            )}
+
+            <ChatInput
+              onSubmit={sendMessage}
+              disabled={isLoading}
+            />
 
             <p className="mt-3 text-center text-xs text-muted">
-              {hasMessages
-                ? "As respostas da IA estarão disponíveis após a integração com o backend."
-                : "As respostas serão fundamentadas nos documentos consultados."}
+              As respostas são geradas com base nos documentos consultados.
             </p>
           </div>
         </footer>

@@ -10,12 +10,12 @@ export function ChatMessage({ message }: ChatMessageProps) {
 
   return (
     <article
-      className={`flex w-full ${
+      className={`flex w-full min-w-0 ${
         isUser ? "justify-end" : "justify-start"
       }`}
     >
       <div
-        className={`max-w-[85%] rounded-2xl p-4 sm:max-w-[75%] ${
+        className={`w-fit min-w-0 max-w-[90%] rounded-2xl p-4 sm:max-w-[80%] ${
           isUser ? "user-message" : "assistant-message"
         }`}
       >
@@ -29,7 +29,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
 
         {!isUser && message.sources && message.sources.length > 0 && (
           <section
-            className="message-sources mt-4 border-t pt-3"
+            className="message-sources mt-4 min-w-0 border-t pt-4"
             aria-label="Fontes documentais"
           >
             <h3 className="mb-3 text-xs font-semibold">
@@ -40,9 +40,9 @@ export function ChatMessage({ message }: ChatMessageProps) {
               {message.sources.map((source, index) => (
                 <div
                   key={`${source.reference}-${index}`}
-                  className="source-card rounded-lg p-3"
+                  className="source-card min-w-0 rounded-xl p-4"
                 >
-                  <p className="text-xs font-semibold">
+                  <p className="wrap-break-word text-xs font-semibold">
                     [{source.reference}] {source.source}
                   </p>
 
