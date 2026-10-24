@@ -27,6 +27,10 @@
   --send-background: #42464d;
   --send-foreground: #ffffff;
 
+  --user-message-background: #d8dbe0;
+  --assistant-message-background: #e5e7eb;
+  --source-background: #f1f2f4;
+
   background: var(--app-background);
   color: var(--app-foreground);
   transition: background-color 180ms ease, color 180ms ease;
@@ -45,6 +49,10 @@
   --button-active: #565a62;
   --send-background: #e0e1e4;
   --send-foreground: #242528;
+
+  --user-message-background: #41444a;
+  --assistant-message-background: #33353a;
+  --source-background: #2c2e32;
 }
 
 body {
@@ -102,6 +110,31 @@ body {
   cursor: not-allowed;
   opacity: 0.55;
 }
+
+/* Chat messages */
+
+.user-message {
+  background: var(--user-message-background);
+  border: 1px solid var(--surface-border);
+}
+
+.assistant-message {
+  background: var(--assistant-message-background);
+  border: 1px solid var(--surface-border);
+}
+
+/* Document sources */
+
+.message-sources {
+  border-color: var(--surface-border);
+}
+
+.source-card {
+  background: var(--source-background);
+  border: 1px solid var(--surface-border);
+}
+
+/* Accessibility */
 
 button:focus-visible,
 textarea:focus-visible {

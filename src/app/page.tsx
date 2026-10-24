@@ -3,11 +3,35 @@
 
 import { useState } from "react";
 
+import { ChatInput } from "@/components/chat/chat-input";
+import { ChatMessage } from "@/components/chat/chat-message";
+import type { ChatMessage as ChatMessageType } from "@/types/chat";
+
 type Theme = "light" | "dark";
 
 export default function Home() {
   const [theme, setTheme] = useState<Theme>("dark");
+  const [messages, setMessages] = useState<ChatMessageType[]>([]);
+
   const isDark = theme === "dark";
+  const hasMessages = messages.length > 0;
+
+  function handleSendMessage(question: string) {
+    const newMessage: ChatMessageType = {
+      id: crypto.randomUUID(),
+      role: "user",
+      content: question,
+    };
+
+    setMessages((previousMessages) => [
+      ...previousMessages,
+      newMessage,
+    ]);
+  }
+
+  function handleNewConversation() {
+    setMessages([]);
+  }
 
   return (
     <main
@@ -19,9 +43,11 @@ export default function Home() {
           <p className="text-xs font-medium uppercase tracking-[0.16em] text-muted">
             Document Intelligence
           </p>
+
           <h1 className="mt-2 text-lg font-semibold tracking-tight">
             Collective Agreements
           </h1>
+
           <p className="mt-1 text-sm text-muted">
             AI-powered document search
           </p>
@@ -29,6 +55,7 @@ export default function Home() {
 
         <button
           type="button"
+          onClick={handleNewConversation}
           className="secondary-button w-full rounded-xl px-4 py-3 text-left text-sm font-medium"
         >
           + Nova conversa
@@ -40,8 +67,13 @@ export default function Home() {
           </h2>
 
           <div className="surface-card mt-3 rounded-xl p-4">
-            <p className="text-xs text-muted">Consultas realizadas</p>
-            <p className="mt-1 text-2xl font-semibold">0</p>
+            <p className="text-xs text-muted">
+              Perguntas enviadas
+            </p>
+
+            <p className="mt-1 text-2xl font-semibold">
+              {messages.filter((message) => message.role === "user").length}
+            </p>
           </div>
         </section>
 
@@ -96,60 +128,70 @@ export default function Home() {
             <h2 className="text-lg font-semibold">
               Consulta de Convenções Coletivas
             </h2>
+
             <p className="mt-1 text-sm text-muted">
               Explore obrigações, benefícios e informações dos documentos.
             </p>
           </div>
         </header>
 
-        <div className="flex flex-1 flex-col items-center justify-center px-6 py-10">
-          <div className="w-full max-w-2xl text-center">
-            <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-accent text-2xl font-semibold">
-              C
+        <div
+          className={`flex min-h-0 flex-1 flex-col px-6 py-10 ${
+            hasMessages
+              ? "overflow-y-auto"
+              : "items-center justify-center"
+          }`}
+        >
+          {hasMessages ? (
+            <div
+              className="mx-auto flex w-full max-w-4xl flex-col gap-5"
+              role="log"
+              aria-label="Mensagens da conversa"
+              aria-live="polite"
+            >
+              {messages.map((message) => (
+                <ChatMessage
+                  key={message.id}
+                  message={message}
+                />
+              ))}
             </div>
-
-            <h3 className="text-3xl font-semibold tracking-tight">
-              Como posso ajudar?
-            </h3>
-
-            <p className="mx-auto mt-4 max-w-xl leading-7 text-muted">
-              Faça perguntas sobre Convenções Coletivas de Trabalho e
-              encontre informações fundamentadas nos documentos.
-            </p>
-
-            <div className="mt-8 grid gap-3 sm:grid-cols-2">
-              <div className="surface-card rounded-xl p-4 text-left text-sm">
-                Quais são as obrigações relacionadas ao seguro de vida?
+          ) : (
+            <div className="w-full max-w-2xl text-center">
+              <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-accent text-2xl font-semibold">
+                C
               </div>
 
-              <div className="surface-card rounded-xl p-4 text-left text-sm">
-                Quais benefícios são previstos na convenção coletiva?
+              <h3 className="text-3xl font-semibold tracking-tight">
+                Como posso ajudar?
+              </h3>
+
+              <p className="mx-auto mt-4 max-w-xl leading-7 text-muted">
+                Faça perguntas sobre Convenções Coletivas de Trabalho e
+                encontre informações fundamentadas nos documentos.
+              </p>
+
+              <div className="mt-8 grid gap-3 sm:grid-cols-2">
+                <div className="surface-card rounded-xl p-4 text-left text-sm">
+                  Quais são as obrigações relacionadas ao seguro de vida?
+                </div>
+
+                <div className="surface-card rounded-xl p-4 text-left text-sm">
+                  Quais benefícios são previstos na convenção coletiva?
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
 
         <footer className="px-6 pb-6 pt-3">
           <div className="mx-auto max-w-4xl">
-            <div className="surface-card flex items-end gap-3 rounded-2xl p-3">
-              <textarea
-                aria-label="Pergunta sobre convenções coletivas"
-                placeholder="Digite sua pergunta..."
-                rows={2}
-                className="min-h-14 flex-1 resize-none bg-transparent px-2 py-2 text-sm outline-none placeholder:text-muted"
-              />
-
-              <button
-                type="button"
-                disabled
-                className="send-button rounded-xl px-5 py-3 text-sm font-semibold"
-              >
-                Enviar
-              </button>
-            </div>
+            <ChatInput onSubmit={handleSendMessage} />
 
             <p className="mt-3 text-center text-xs text-muted">
-              As respostas serão fundamentadas nos documentos consultados.
+              {hasMessages
+                ? "As respostas da IA estarão disponíveis após a integração com o backend."
+                : "As respostas serão fundamentadas nos documentos consultados."}
             </p>
           </div>
         </footer>
