@@ -13,3 +13,14 @@ export interface ChatMessage {
   content: string;
   sources?: ChatSource[];
 }
+
+export interface ChatRequest {
+  question: string;
+  k?: number | null;
+}
+
+export interface ChatResponse {
+  question: string;
+  answer: string;
+  sources: ChatSource[];
+}
