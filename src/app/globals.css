@@ -31,6 +31,10 @@
   --assistant-message-background: #e5e7eb;
   --source-background: #f1f2f4;
 
+  --scrollbar-track: #e7e8eb;
+  --scrollbar-thumb: #b6bac1;
+  --scrollbar-thumb-hover: #8e949d;
+
   background: var(--app-background);
   color: var(--app-foreground);
   transition: background-color 180ms ease, color 180ms ease;
@@ -53,6 +57,10 @@
   --user-message-background: #41444a;
   --assistant-message-background: #33353a;
   --source-background: #2c2e32;
+
+  --scrollbar-track: #2c2e32;
+  --scrollbar-thumb: #555960;
+  --scrollbar-thumb-hover: #747981;
 }
 
 body {
@@ -134,10 +142,37 @@ body {
   border: 1px solid var(--surface-border);
 }
 
+/* Scrollbars */
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 9999px;
+  border: 1px solid var(--scrollbar-track);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
 /* Accessibility */
 
 button:focus-visible,
-textarea:focus-visible {
+textarea:focus-visible,
+input[type="file"]:focus-visible {
   outline: 2px solid var(--muted-foreground);
   outline-offset: 3px;
 }

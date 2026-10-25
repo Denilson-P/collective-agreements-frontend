@@ -19,6 +19,10 @@ const nextConfig: NextConfig = {
         source: "/api/chat",
         destination: "http://127.0.0.1:8000/chat",
       },
+      {
+        source: "/api/documents/upload",
+        destination: "http://127.0.0.1:8000/documents/upload",
+      },
     ];
   },
 };
