@@ -1,10 +1,11 @@
 
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { ChatInput } from "@/components/chat/chat-input";
 import { ChatMessage } from "@/components/chat/chat-message";
+import { DocumentUpload } from "@/components/documents/document-upload";
 import { useChat } from "@/hooks/use-chat";
 
 type Theme = "light" | "dark";
@@ -20,15 +21,66 @@ export default function Home() {
     newConversation,
   } = useChat();
 
+  const chatScrollRef = useRef<HTMLDivElement>(null);
+  const previousAssistantIdRef = useRef<string | null>(null);
+
   const isDark = theme === "dark";
   const hasMessages = messages.length > 0;
+
+  const lastAssistantMessage = [...messages]
+    .reverse()
+    .find((message) => message.role === "assistant");
+
+  const lastAssistantId = lastAssistantMessage?.id ?? null;
+
+  useEffect(() => {
+    if (!lastAssistantId) {
+      previousAssistantIdRef.current = null;
+      return;
+    }
+
+    if (previousAssistantIdRef.current === lastAssistantId) {
+      return;
+    }
+
+    previousAssistantIdRef.current = lastAssistantId;
+
+    const container = chatScrollRef.current;
+
+    if (!container) {
+      return;
+    }
+
+    const assistantMessageElement = Array.from(
+      container.querySelectorAll<HTMLElement>("[data-assistant-message]"),
+    ).at(-1);
+
+    if (!assistantMessageElement) {
+      return;
+    }
+
+    const containerTop = container.getBoundingClientRect().top;
+    const messageTop = assistantMessageElement.getBoundingClientRect().top;
+
+    const targetScrollTop =
+      container.scrollTop + messageTop - containerTop - 16;
+
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    container.scrollTo({
+      top: targetScrollTop,
+      behavior: prefersReducedMotion ? "instant" : "smooth",
+    });
+  }, [lastAssistantId]);
 
   return (
     <main
       data-theme={theme}
-      className="app-shell flex min-h-screen flex-col md:h-screen md:flex-row"
+      className="app-shell flex min-h-screen flex-col md:h-dvh md:min-h-0 md:overflow-hidden md:flex-row"
     >
-      <aside className="sidebar flex w-full shrink-0 flex-col border-b p-5 md:w-72 md:border-b-0 md:border-r">
+      <aside className="sidebar custom-scrollbar flex w-full shrink-0 flex-col border-b p-5 md:h-full md:w-72 md:overflow-y-auto md:border-b-0 md:border-r">
         <div className="mb-8">
           <p className="text-xs font-medium uppercase tracking-[0.16em] text-muted">
             Document Intelligence
@@ -66,6 +118,10 @@ export default function Home() {
             </p>
           </div>
         </section>
+
+        <div className="mt-8">
+          <DocumentUpload />
+        </div>
 
         <section className="mt-8">
           <h2 className="text-xs font-semibold uppercase tracking-wider text-muted">
@@ -112,8 +168,8 @@ export default function Home() {
         </div>
       </aside>
 
-      <section className="flex min-h-[650px] min-w-0 flex-1 flex-col md:min-h-0">
-        <header className="header-border border-b px-6 py-5">
+      <section className="flex min-h-[650px] min-w-0 flex-1 flex-col md:h-full md:min-h-0">
+        <header className="header-border shrink-0 border-b px-6 py-5">
           <div className="mx-auto max-w-4xl">
             <h2 className="text-lg font-semibold">
               Consulta de Convenções Coletivas
@@ -126,7 +182,8 @@ export default function Home() {
         </header>
 
         <div
-          className={`flex min-h-0 flex-1 flex-col px-6 py-10 ${
+          ref={chatScrollRef}
+          className={`custom-scrollbar flex min-h-0 flex-1 flex-col px-6 py-10 ${
             hasMessages
               ? "overflow-y-auto"
               : "items-center justify-center"
@@ -140,10 +197,15 @@ export default function Home() {
               aria-live="polite"
             >
               {messages.map((message) => (
-                <ChatMessage
+                <div
                   key={message.id}
-                  message={message}
-                />
+                  data-assistant-message={
+                    message.role === "assistant" ? "true" : undefined
+                  }
+                  className="flex w-full flex-col"
+                >
+                  <ChatMessage message={message} />
+                </div>
               ))}
 
               {isLoading && (
@@ -183,7 +245,7 @@ export default function Home() {
           )}
         </div>
 
-        <footer className="px-6 pb-6 pt-3">
+        <footer className="shrink-0 px-6 pb-6 pt-3">
           <div className="mx-auto max-w-4xl">
             {error && (
               <div
