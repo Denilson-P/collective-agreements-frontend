@@ -1,3 +1,4 @@
+
 import type { NextConfig } from "next";
 
 const backendUrl =
@@ -7,6 +8,11 @@ const nextConfig: NextConfig = {
   devIndicators: false,
   cacheComponents: true,
   partialPrefetching: true,
+
+  experimental: {
+    proxyTimeout: 120_000,
+  },
+
   turbopack: {
     rules: {
       "*.css": {
@@ -15,6 +21,7 @@ const nextConfig: NextConfig = {
       },
     },
   },
+
   async rewrites() {
     return [
       {
