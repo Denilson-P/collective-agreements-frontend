@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -22,6 +21,7 @@ export function useChat(): UseChatReturn {
   const abortControllerRef = useRef<AbortController | null>(null);
   const requestIdRef = useRef(0);
   const isRequestPendingRef = useRef(false);
+  const conversationIdRef = useRef<string | null>(null);
 
   const sendMessage = useCallback(async (question: string): Promise<void> => {
     const normalizedQuestion = question.trim();
@@ -52,13 +52,20 @@ export function useChat(): UseChatReturn {
 
     try {
       const response = await sendChatMessage(
-        { question: normalizedQuestion },
+        {
+          question: normalizedQuestion,
+          ...(conversationIdRef.current !== null && {
+            conversation_id: conversationIdRef.current,
+          }),
+        },
         controller.signal,
       );
 
       if (requestId !== requestIdRef.current) {
         return;
       }
+
+      conversationIdRef.current = response.conversation_id;
 
       const assistantMessage: ChatMessage = {
         id: crypto.randomUUID(),
@@ -102,6 +109,7 @@ export function useChat(): UseChatReturn {
     abortControllerRef.current?.abort();
     abortControllerRef.current = null;
     isRequestPendingRef.current = false;
+    conversationIdRef.current = null;
 
     setMessages([]);
     setError(null);
