@@ -1,4 +1,3 @@
-
 import type { ChatRequest, ChatResponse } from "@/types/chat";
 
 const CHAT_ENDPOINT = "/api/chat";
@@ -83,6 +82,8 @@ function isChatResponse(value: unknown): value is ChatResponse {
   return (
     typeof data.question === "string" &&
     typeof data.answer === "string" &&
+    typeof data.conversation_id === "string" &&
+    data.conversation_id.length > 0 &&
     Array.isArray(data.sources) &&
     data.sources.every((source: unknown) => {
       if (typeof source !== "object" || source === null) {
